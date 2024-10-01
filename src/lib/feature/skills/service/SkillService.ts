@@ -6,22 +6,17 @@ import SkillModel from "../model/SkillModel";
 interface ICreateSkill {
     name: string;
     type: string;
-    image?: string;
+    image: string;
 }
 
 export class SkillService {
 
-    async create(data: ICreateSkill, image: string): Promise<ApiResponse> {
+    async create(data: ICreateSkill): Promise<ApiResponse> {
         const findSkill = await SkillModel.findOne({ name: data.name });
         if (findSkill) {
-            deleteFile(image);
             throw new ApiError(400, 'The skill was found and is now available.');
         }
-        const category = await SkillModel.create({
-            name: data.name,
-            image: image || null,
-            type: data.type
-        });
+        const category = await SkillModel.create(data);
 
         return new SuccessResponse({
             statusCode: 201,
@@ -49,11 +44,10 @@ export class SkillService {
         });
     }
 
-    async update(data: ICreateSkill, skillId: string, image?: string): Promise<ApiResponse> {
+    async update(data: ICreateSkill, skillId: string): Promise<ApiResponse> {
         const findSkill = await SkillModel.findOne({ name: data.name, _id: { $ne: skillId } });
 
         if (findSkill) {
-            deleteFile(image);
             throw new ApiError(400, 'The skill name was found and is now available.');
         }
 
@@ -64,11 +58,7 @@ export class SkillService {
         }
         skill.name = data.name || skill.name;
         skill.type = data.type || skill.type;
-
-        if (image) {
-            deleteFile(skill.image);
-            skill.image = image;
-        }
+        skill.image = data.image || data.image;
 
         await skill.save();
 
@@ -84,7 +74,6 @@ export class SkillService {
         if (!deleteSkill) {
             throw new ApiError(400, 'No skill found with the provided details.');
         }
-        deleteFile(deleteSkill.image);
         return new SuccessResponse({
             statusCode: 200,
             data: deleteSkill,

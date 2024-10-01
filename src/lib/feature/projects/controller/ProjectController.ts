@@ -6,11 +6,7 @@ class ProjectController {
 
     async create(req: Request, res: Response, next: NextFunction) {
         try {
-            const path = req.file?.path;
-            if (!path) {
-                throw new ApiError(400, 'Project image is required.');
-            }
-            const response = await projectService.create(req.body, path);
+            const response = await projectService.create(req.body);
             res.status(200).json(response);
         } catch (e) {
             return next(e);
@@ -28,7 +24,7 @@ class ProjectController {
 
     async update(req: Request, res: Response, next: NextFunction) {
         try {
-            const response = await projectService.update(req.body, req.params?.projectId, req.file?.path);
+            const response = await projectService.update(req.body, req.params?.projectId);
             res.status(200).json(response);
         } catch (e) {
             return next(e);

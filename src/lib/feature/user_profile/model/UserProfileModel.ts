@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 
-interface IExplore {
+export interface IExplore {
     title: string;
     description: string;
 }
@@ -11,7 +11,6 @@ interface IUserProfile {
     instagramLink: string;
     gitLink: string;
     linkedInLink: string;
-    cv: string;
     description: string;
     aboutMe: string;
     explore: IExplore[];
@@ -40,10 +39,6 @@ const userProfileSchema = new Schema<IUserProfile>({
         required: true
     },
     linkedInLink: {
-        type: String,
-        required: true
-    },
-    cv: {
         type: String,
         required: true
     },

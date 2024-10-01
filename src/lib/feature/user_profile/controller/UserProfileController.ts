@@ -4,7 +4,7 @@ import { userProfileService } from "../service/UserProfileService";
 class UserProfileController {
     async post(req: Request, res: Response, next: NextFunction) {
         try {
-            const response = await userProfileService.post(req.body, req.file?.path);
+            const response = await userProfileService.post(req.body);
             return res.status(200).json(response);
         } catch (e) {
             return next(e);

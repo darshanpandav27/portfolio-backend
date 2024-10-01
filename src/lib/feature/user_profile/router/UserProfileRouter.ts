@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { cvUploader } from "../../../core/middleware/Multer";
 import { userProfileController } from "../controller/UserProfileController";
+import { Middleware } from "../../../core/middleware/Middleware";
+import { userProfileValidation } from "../validation/UserProfileValidation";
 
 const router = Router();
 
-router.post('/', cvUploader.single("cv"), userProfileController.post);
+router.post('/', Middleware.bodyValidation(userProfileValidation), userProfileController.post);
 router.get('/', userProfileController.get);
 
 export default router;

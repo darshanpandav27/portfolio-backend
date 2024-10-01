@@ -1,19 +1,26 @@
 import { ApiError } from "../../../core/error/ApiError";
 import { ApiResponse, SuccessResponse } from "../../../core/response/Response";
-import UserProfileModel from "../model/UserProfileModel";
+import UserProfileModel, { IExplore } from "../model/UserProfileModel";
+
+interface ICreateUserProfile {
+    name: string;
+    designation: string;
+    instagramLink: string;
+    gitLink: string;
+    linkedInLink: string;
+    description: string;
+    aboutMe: string;
+    explore: IExplore[];
+    email: string;
+    phoneNo: string;
+}
 
 export class UserProfileService {
-    async post(data: any, cv?: string): Promise<ApiResponse> {
+    async post(data: ICreateUserProfile): Promise<ApiResponse> {
 
         let findUser = await UserProfileModel.findOne();
         if (!findUser) {
-            if (!cv) {
-                throw new ApiError(400, "CV is required");
-            }
-            findUser = new UserProfileModel({
-                ...data,
-                cv: cv,
-            });
+            findUser = new UserProfileModel(data);
             await findUser.save();
             return new SuccessResponse({
                 statusCode: 201,
@@ -21,15 +28,11 @@ export class UserProfileService {
                 data: findUser
             });
         }
-        if (cv) {
-            data.cv = cv;
-        }
         findUser = await UserProfileModel.findOneAndUpdate(
             { _id: findUser._id },
             data,
             { new: true }
         );
-
         return new SuccessResponse({
             statusCode: 200,
             message: "User profile update successfully",

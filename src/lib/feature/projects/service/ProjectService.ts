@@ -6,7 +6,7 @@ import ProjectModel from "../model/ProjectModel";
 interface ICreateProject {
     title: string;
     description: string;
-    image?: string;
+    image: string;
     technology: string[];
     gitHubLink?: string;
     liveLink?: string;
@@ -14,15 +14,8 @@ interface ICreateProject {
 
 export class ProjectService {
 
-    async create(data: ICreateProject, image: string): Promise<ApiResponse> {
-        const project = await ProjectModel.create({
-            title: data.title,
-            description: data.description,
-            image: image,
-            technology: data.technology,
-            gitHubLink: data.gitHubLink,
-            liveLink: data.liveLink,
-        });
+    async create(data: ICreateProject): Promise<ApiResponse> {
+        const project = await ProjectModel.create(data);
 
         return new SuccessResponse({
             statusCode: 201,
@@ -47,25 +40,14 @@ export class ProjectService {
         });
     }
 
-    async update(data: ICreateProject, projectId: string, image?: string): Promise<ApiResponse> {
+    async update(data: ICreateProject, projectId: string): Promise<ApiResponse> {
         const project = await ProjectModel.findById(projectId);
 
         if (!project) {
             throw new ApiError(400, 'No project found with the provided details.');
         }
 
-        if (image) {
-            deleteFile(project.image);
-        }
-
-        let updatedProject = await ProjectModel.findByIdAndUpdate(projectId, {
-            title: data.title || project.title,
-            description: data.description || project.description,
-            image: image || project.image,
-            technology: data.technology || project.technology,
-            gitHubLink: data.gitHubLink || project.gitHubLink,
-            liveLink: data.liveLink || project.liveLink,
-        }, { new: true });
+        let updatedProject = await ProjectModel.findByIdAndUpdate(projectId, data, { new: true });
 
         return new SuccessResponse({
             statusCode: 200,
@@ -79,7 +61,6 @@ export class ProjectService {
         if (!project) {
             throw new ApiError(400, 'No project found with the provided details.');
         }
-        deleteFile(project.image);
         return new SuccessResponse({
             statusCode: 200,
             data: project,
